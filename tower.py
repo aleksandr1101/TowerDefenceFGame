@@ -74,3 +74,29 @@ class SlowingTower(Tower):
         enemy.getDamage(self.damage[self.lvl])
         enemy.slow_down()
         # todo: flying bullet
+
+
+class StandartTower(Tower):
+    """Standart tower"""
+
+    def __init__(self):
+        super().__init__([0, 0, 0], tps, 0, None)
+
+
+class TowerFactory:
+    def generateTower(self):
+        return None
+
+
+class FireTowerFactory(TowerFactory):
+    def generateTower(self):
+        return FireTower()
+
+
+class SlowingTowerFactory(TowerFactory):
+    def generateTower(self):
+        return SlowingTower()
+
+class StandartTowerFactory(TowerFactory):
+    def generateTower(self):
+        return StandartTower()

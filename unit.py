@@ -65,6 +65,13 @@ class Unit():
         # todo: screen_mooving & (x, y)_moving
 
 
+class StandartUnit(Unit):
+    """Standart unit"""
+
+    def __init__(self):
+        super().__init__(0, 0, 0, None)
+
+
 class FastUnit(Unit):
     """Fast unit class, it fires well"""
 
@@ -104,3 +111,27 @@ class BossUnit(Unit):
         """if unit is stroken by slowing tower"""
         self.sDuration = bossDuration
         self.slowing = bossSlowing
+
+
+class UnitFactiory:
+    def generateUnit(self):
+        return None
+
+
+class StandartUnitFactory(UnitFactiory):
+    def generateUnit(self):
+        return StandartUnit()
+
+
+class FastUnitFactory(UnitFactiory):
+    def generateUnit(self):
+        return FastUnit()
+
+
+class FatUnitFactory(UnitFactiory):
+    def generateUnit(self):
+        return FastUnit()
+
+class BossUnitFactory(UnitFactiory):
+    def generateUnit(self):
+        return BossUnit()
