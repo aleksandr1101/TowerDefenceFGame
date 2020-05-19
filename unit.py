@@ -31,6 +31,7 @@ class Unit:
         self.y = 0
         self.pos_l = 0
         self.visible = 1
+        self.size = 40
 
     def light(self):
         """if unit stroken by fire tower"""
@@ -81,7 +82,7 @@ class Unit:
         if self.hp <= 0:
             self.hp = 0
             if self.visible:
-                board.gold += 1
+                board.gold += self.goldGaining
             self.visible = 0
             # todo: kill unit
             return
@@ -96,12 +97,6 @@ class Unit:
 
         self.move_monster(real_speed)
 
-    def show(self, screen):
-        if self.visible == 0:
-            return
-        pic = utils.get_picture(self.img, (40, 40))
-        screen.blit(pic, (self.x, self.y))
-
     def center(self):
         return self.x + 20, self.y + 20
 
@@ -110,14 +105,14 @@ class StandartUnit(Unit):
     """Standart unit"""
 
     def __init__(self):
-        super().__init__(6, 40, 0, "red.png")
+        super().__init__(6, 80, 1, "red.png")
 
 
 class FastUnit(Unit):
     """Fast unit class, it fires well"""
 
     def __init__(self):
-        super().__init__(8, 25, 0, "dog.png")
+        super().__init__(10, 50, 1, "dog.png")
 
     def light(self):
         """if unit stroken by fire tower"""
@@ -129,7 +124,7 @@ class FatUnit(Unit):
     """Fat unit class, it freeze well"""
 
     def __init__(self):
-        super().__init__(4, 100, 0, "por.png")
+        super().__init__(4, 200, 2, "por.png")
 
     def slow_down(self):
         """if unit is stroken by slowing tower"""
@@ -141,7 +136,7 @@ class BossUnit(Unit):
     """Boss unit class, it fires and freeze bad"""
 
     def __init__(self):
-        super().__init__(5, 80, 0, "yolo.png")
+        super().__init__(5, 160, 2, "yolo.png")
 
     def light(self):
         """if unit stroken by fire tower"""

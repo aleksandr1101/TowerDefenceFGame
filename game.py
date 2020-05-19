@@ -5,6 +5,7 @@ import unit
 import tower
 from os import path
 from board import Board
+import commands
 
 
 # initializing game
@@ -20,72 +21,61 @@ screenY = 580
 screen = pygame.display.set_mode((screenX, screenY))
 bg = utils.get_picture("bg.png", (screenX, screenY))
 game_font = pygame.freetype.Font(path.join("fonts", "game_font.ttf"), 24)
+info_font = pygame.freetype.Font(path.join("fonts", "info_font.ttf"), 18)
+fonts = [game_font, info_font]
 
 # title and icon
 pygame.display.set_caption("TowerDefenceGame")
-# icon = utils.get_picture("checkers.png")
-# pygame.display.set_icon(icon)
 
-# initial settings
-board = Board()
+if __name__ == "__main__":
+    # initial settings
+    board = Board()
 
-# game loop
-running = True
-board.get_new_wave()
-tower_type = None
+    # game loop
+    board.get_new_wave()
 
-while running:
-    for event in pygame.event.get():
-        # quit the game
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_q:
-                tower_type = tower.StandartTowerFactory()
-            elif event.key == pygame.K_w:
-                tower_type = tower.SlowingTowerFactory()
-            elif event.key == pygame.K_e:
-                tower_type = tower.FireTowerFactory()
-            elif event.key == pygame.K_s:
-                tower_type = None
-        if event.type == pygame.MOUSEBUTTONUP:
-            if tower_type is not None:
-                x, y = pygame.mouse.get_pos()
-                cell = utils.find_square(x, y, board)
-                if cell and board.gold >= tower_type.get_value():
-                    board.gold -= tower_type.get_value()
-                    t = tower_type.generateTower()
-                    t.x, t.y = cell.x1, cell.y1
-                    board.towers.append(t)
-                    print(x, y)
+    while board.running:
+        event_commands = list()
+        for event in pygame.event.get():
+            # quit the game
+            if event.type == pygame.QUIT:
+                event_commands.append(commands.QuitCommand(board))
+            # key press event
+            if event.type == pygame.KEYDOWN:
+                event_commands.append(commands.TowerChooseCommand(event.key, board))
+            # tower to place choosing
+            if event.type == pygame.MOUSEBUTTONUP:
+                event_commands.append(commands.TowerPlacingCommand(board))
 
-    if board.hp <= 0:
-        board = Board()
-        pygame.time.wait(1000)
-        board.get_new_wave()
-        continue
+        if board.hp <= 0:
+            board = Board()
+            pygame.time.wait(1000)
+            board.get_new_wave()
+            continue
 
-    cnt = 0
-    for monster in board.wave:
-        cnt += monster.visible
-    if cnt == 0:
-        pygame.time.wait(1000)
-        board.wave_number += 1
-        board.get_new_wave()
-        continue
+        cnt = 0
+        for monster in board.wave:
+            cnt += monster.visible
+        if cnt == 0:
+            pygame.time.wait(1000)
+            board.wave_number += 1
+            board.get_new_wave()
+            continue
 
-    screen.blit(bg, (0, 0))
+        screen.blit(bg, (0, 0))
 
-    for tow in board.towers:
-        tow.show(screen)
-        if pygame.time.get_ticks() - tow.prev_attack >= tow.attackTime:
-            tow.attack(board.wave)
-            tow.prev_attack = pygame.time.get_ticks()
+        for tow in board.towers:
+            utils.show(tow, screen)
+            if pygame.time.get_ticks() - tow.prev_attack >= tow.attackTime:
+                tow.attack(board.wave)
+                tow.prev_attack = pygame.time.get_ticks()
 
-    for monster in board.wave:
-        monster.simulate_tick(board)
-        monster.show(screen)
+        for monster in board.wave:
+            monster.simulate_tick(board)
+            utils.show(monster, screen)
 
-    utils.display_text(board, game_font, screen)
-    pygame.display.update()
-    clock.tick(tps)
+        for event_command in event_commands:
+            event_command.apply()
+        utils.display_text(board, fonts, screen)
+        pygame.display.update()
+        clock.tick(tps)

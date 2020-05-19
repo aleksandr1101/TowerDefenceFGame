@@ -5,25 +5,17 @@ from cell import Cell
 class Board:
     """information about the current game stats"""
     def __init__(self):
-        self.hp = 50
+        self.hp = 10
         self.gold = 20
         self.wave_number = 0
         self.wave = list()
         self.towers = list()
-        self.cells = list()
-        # c = cell.Cell(110, 60, 189, 135)
-        self.cells.append(Cell(110, 60, 189, 135))
-        self.cells.append(Cell(279, 60, 358, 135))
-        self.cells.append(Cell(448, 60, 527, 135))
-        self.cells.append(Cell(615, 60, 695, 135))
-        self.cells.append(Cell(194, 225, 273, 303))
-        self.cells.append(Cell(362, 225, 443, 303))
-        self.cells.append(Cell(530, 225, 611, 303))
-        self.cells.append(Cell(699, 225, 779, 303))
-        self.cells.append(Cell(110, 398, 189, 473))
-        self.cells.append(Cell(279, 398, 358, 473))
-        self.cells.append(Cell(448, 398, 527, 473))
-        self.cells.append(Cell(615, 398, 695, 473))
+        self.running = True
+        self.tower_type = None
+        self.cells = [Cell(110, 60, 189, 135), Cell(279, 60, 358, 135), Cell(448, 60, 527, 135),
+                      Cell(615, 60, 695, 135), Cell(194, 225, 273, 303), Cell(362, 225, 443, 303),
+                      Cell(530, 225, 611, 303), Cell(699, 225, 779, 303), Cell(110, 398, 189, 473),
+                      Cell(279, 398, 358, 473), Cell(448, 398, 527, 473), Cell(615, 398, 695, 473)]
 
     def get_new_wave(self):
         self.wave = list()

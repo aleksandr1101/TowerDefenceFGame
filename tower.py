@@ -1,6 +1,6 @@
 from utils import dist
 import utils
-import random
+from random import choice
 import pygame
 from unit import Unit
 from unit import BossUnit
@@ -22,39 +22,35 @@ class Tower:
         self.img = img
         self.x = 0
         self.y = 0
+        self.size = 80
+        self.visible = 1
 
     def upgrade(self):
         """upgrade tower lvl for more damage and special effects"""
         if self.lvl != 3:
             self.lvl += 1
 
-    def getTarget(self, units):
+    def get_target(self, units):
         """Get target for attacking it"""
         # attacking the nearest unit
 
-        eq = list()
+        suitable_units = list()
         for unit in units:
-            cX, cY = self.center()
-            uX, uY = unit.center()
-            newDist = dist(cX, cY, uX, uY)
-            if newDist <= self.range:
-                eq.append(unit)
-        if len(eq) == 0:
+            towerX, towerY = self.center()
+            unitX, unitY = unit.center()
+            new_dist = dist(towerX, towerY, unitX, unitY)
+            if new_dist <= self.range:
+                suitable_units.append(unit)
+        if len(suitable_units) == 0:
             return None
-        return eq[random.randint(0, len(eq) - 1)]
+        return choice(suitable_units)
 
     def attack(self, units):
         """attacking the enemy with self.damage"""
-        enemy = self.getTarget(units)
+        enemy = self.get_target(units)
         if enemy is None:
             return
         enemy.get_damage(self.damage[self.lvl])
-        # todo: flying bullet
-
-    def show(self, screen):
-        pic = utils.get_picture(self.img, (80, 80))
-        # pygame.draw.circle(screen, (255, 255, 255), self.center(), self.range, 1)
-        screen.blit(pic, (self.x, self.y))
 
     def center(self):
         return self.x + 40, self.y + 40
@@ -68,7 +64,7 @@ class FireTower(Tower):
 
     def attack(self, units):
         """attacking the enemy with self.damage"""
-        enemy = self.getTarget(units)
+        enemy = self.get_target(units)
         if enemy is None:
             return
         enemy.get_damage(self.damage[self.lvl])
@@ -80,23 +76,22 @@ class SlowingTower(Tower):
     """Firing tower"""
 
     def __init__(self):
-        super().__init__([1, 1, 1], tps // 2, 200, "freezing.png")
+        super().__init__([0, 0, 0], tps // 2, 200, "freezing.png")
 
     def attack(self, units):
         """attacking the enemy with self.damage"""
-        enemy = self.getTarget(units)
+        enemy = self.get_target(units)
         if enemy is None:
             return
         enemy.get_damage(self.damage[self.lvl])
         enemy.slow_down()
-        # todo: flying bullet
 
 
 class StandartTower(Tower):
     """Standart tower"""
 
     def __init__(self):
-        super().__init__([1, 1, 1], tps, 130, "damaging.png")
+        super().__init__([3, 3, 3], tps, 130, "damaging.png")
 
 
 class TowerFactory:
